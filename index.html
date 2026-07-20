@@ -1,9 +1,3 @@
-<script>
-// 强制未登录自动跳登录页
-if (!sessionStorage.getItem("loginOk")) {
-    window.location.href = "login.html";
-}
-</script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -365,7 +359,7 @@ if (!sessionStorage.getItem("loginOk")) {
         }
         
         body.light-mode .theme-slider {
-            background-color: #E0E0E0;
+            background-color: #E0E0;
         }
         
         .slider-dot {
@@ -393,7 +387,7 @@ if (!sessionStorage.getItem("loginOk")) {
         
         @media (max-width: 480px) {
             .logo-container { gap: 6px; }
-            .hexagon-icon { margin-right: 0; }
+            .hexagon-icon { transform: scale(0.8); }
             .button { padding: 14px 16px; font-size: 1.0rem; }
             .date-value { font-size: 1.4rem; }
             .theme-slider-container { top: 10px; right: 10px; }
@@ -409,7 +403,7 @@ if (!sessionStorage.getItem("loginOk")) {
             </div>
         </div>
         
-        <!-- Logo区域：左图右文，图标在左，文字分两行 -->
+        <!-- Logo区域 -->
         <div class="logo-section">
             <div class="logo-container">
                 <div class="hexagon-icon">
@@ -427,7 +421,7 @@ if (!sessionStorage.getItem("loginOk")) {
             <div class="subtitle">Veni • Vidi • Vici</div>
         </div>
         
-        <!-- 信息区块 -->
+        <!-- 日期信息 -->
         <div class="info-block">
             <div class="copyright" id="copyright">天天进步，每日新生</div>
             <div class="date-section">
@@ -450,115 +444,86 @@ if (!sessionStorage.getItem("loginOk")) {
             </div>
         </div>
         
-        <!-- 按钮区域 -->
-        <div class="button-section" id="buttonSection">
-            <!-- 由JS动态生成 21 个按钮 -->
-        </div>
+        <!-- Day按钮容器 -->
+        <div class="button-section" id="buttonSection"></div>
         
         <!-- 底部 -->
         <div class="footer">
             <div class="tiny-credit">⏤</div>
         </div>
     </div>
-    
-    <script>
-        function getCurrentDate() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            const weekday = weekdays[now.getDay()];
-            return { year, month, day, weekday };
-        }
-        
-        function updateDateDisplay() {
-            const date = getCurrentDate();
-            document.getElementById('year').textContent = date.year;
-            document.getElementById('month').textContent = date.month;
-            document.getElementById('day').textContent = date.day;
-            document.getElementById('weekday').textContent = date.weekday;
-        }
-        
-        function setupThemeToggle() {
-            const themeSlider = document.getElementById('themeSlider');
-            const body = document.body;
-            
-            themeSlider.addEventListener('click', function() {
-                body.classList.toggle('light-mode');
-                localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
-            });
-            
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                body.classList.add('light-mode');
-            }
-        }
-        
-        function setupDayButtons() {
-            const section = document.getElementById('buttonSection');
-            section.innerHTML = '';
-            
-            for (let i = 1; i <= 21; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'button';
-                btn.textContent = `Day ${i}`;
-                // 固定生成 d01.html ~ d21.html
-                const fileName = String(i).padStart(2, '0') + '.html';
-                btn.setAttribute('data-url', fileName);
-                
-                btn.addEventListener('mouseenter', function() {
-                    this.style.fontWeight = '600';
-                });
-                btn.addEventListener('mouseleave', function() {
-                    this.style.fontWeight = '400';
-                });
-                
-                btn.addEventListener('click', function(e) {
-                    const url = this.getAttribute('data-url');
-                    
-                    // 水波纹动画保留
-                    const ripple = document.createElement('div');
-                    ripple.style.position = 'absolute';
-                    ripple.style.borderRadius = '50%';
-                    ripple.style.backgroundColor = document.body.classList.contains('light-mode') 
-                        ? 'rgba(26, 26, 26, 0.2)' 
-                        : 'rgba(255, 255, 255, 0.3)';
-                    ripple.style.transform = 'scale(0)';
-                    ripple.style.animation = 'ripple 0.6s linear';
-                    ripple.style.pointerEvents = 'none';
-                    
-                    const size = Math.max(this.clientWidth, this.clientHeight);
-                    ripple.style.width = ripple.style.height = size + 'px';
-                    
-                    const rect = this.getBoundingClientRect();
-                    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-                    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-                    
-                    this.style.position = 'relative';
-                    this.style.overflow = 'hidden';
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 600);
-                    
-                    console.log(`跳转页面文件: ${url}`);
-                    // 直接跳转对应词汇页面
-                    window.location.href = url;
-                });
-                
-                section.appendChild(btn);
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDateDisplay();
-            setupThemeToggle();
-            setupDayButtons();
-            document.title = 'Reborn新生留学 · 托福核心词汇21天';
-            setInterval(updateDateDisplay, 24 * 60 * 60 * 1000);
-        });
-    </script>
+
+<!-- 所有JS统一放到body末尾，不会破坏页面渲染 -->
+<script>
+// 登录校验逻辑（放到页面最底部，页面渲染完再执行）
+if (!sessionStorage.getItem("loginOk")) {
+    window.location.href = "login.html";
+}
+
+function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const weekday = weekdays[now.getDay()];
+    return { year, month, day, weekday };
+}
+
+function updateDateDisplay() {
+    const date = getCurrentDate();
+    document.getElementById('year').textContent = date.year;
+    document.getElementById('month').textContent = date.month;
+    document.getElementById('day').textContent = date.day;
+    document.getElementById('weekday').textContent = date.weekday;
+}
+
+function setupThemeToggle() {
+    const themeSlider = document.getElementById('themeSlider');
+    const body = document.body;
+    themeSlider.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+    });
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') body.classList.add('light-mode');
+}
+
+// 生成Day按钮+跳转逻辑
+function setupDayButtons() {
+    const section = document.getElementById('buttonSection');
+    section.innerHTML = '';
+    for (let i = 1; i <= 21; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'button';
+        btn.textContent = `Day ${i}`;
+        const fileName = String(i).padStart(2, '0') + '.html';
+        btn.dataset.url = fileName;
+
+        btn.onmouseenter = () => btn.style.fontWeight = "600";
+        btn.onmouseleave = () => btn.style.fontWeight = "400";
+
+        btn.addEventListener('click', function(e) {
+            // 水波纹动画
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `position:absolute;border-radius:50%;transform:scale(0);animation:ripple 0.6s linear;pointer-events:none;width:${Math.max(this.clientWidth,this.clientHeight)}px;height:${Math.max(this.clientWidth,this.clientHeight)}px;left:${e.clientX - this.getBoundingClientRect().left - Math.max(this.clientWidth,this.clientHeight)/2}px;top:${e.clientY - this.getBoundingClientRect().top - Math.max(this.clientWidth,this.clientHeight)/2}px;background:${document.body.classList.contains('light-mode') ? 'rgba(26,26,26,0.2)' : 'rgba(255,255,255,0.3)'}`;
+            this.style.overflow = "hidden";
+            this.style.position = "relative";
+            this.appendChild(ripple);
+            setTimeout(()=>ripple.remove(),600);
+            // 跳转词汇页
+            window.location.href = this.dataset.url;
+        })
+        section.appendChild(btn);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateDateDisplay();
+    setupThemeToggle();
+    setupDayButtons();
+    setInterval(updateDate, 86400000);
+})
+</script>
 </body>
 </html>
