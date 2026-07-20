@@ -29,13 +29,10 @@
             const errorMsg = document.getElementById("errorMsg");
 
             if (inputPwd === correctPassword) {
+                // 写入登录标记
                 sessionStorage.setItem("loginOk", "yes");
-                // 确保写入成功后再跳转
-                if (sessionStorage.getItem("loginOk") === "yes") {
-                    window.location.replace("index.html");
-                } else {
-                    alert("登录状态写入失败，请检查浏览器设置");
-                }
+                // 带参数跳转，告诉 index.html 登录成功
+                window.location.replace("index.html?login=ok");
             } else {
                 errorMsg.style.display = "block";
                 document.getElementById("pwd").value = "";
@@ -45,7 +42,7 @@
 
         // 如果已经登录，直接跳转
         if (sessionStorage.getItem("loginOk") === "yes") {
-            window.location.replace("index.html");
+            window.location.replace("index.html?login=ok");
         }
     </script>
 </body>
