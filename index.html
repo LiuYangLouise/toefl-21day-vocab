@@ -477,8 +477,6 @@
         function setupThemeToggle() {
             const themeSlider = document.getElementById('themeSlider');
             const body = document.body;
-            // 两行文字各自独立，主题切换时不变内容，但颜色随主题变化
-            // 文字内容固定为 "Reborn新生留学" 和 "托福核心词汇21天"
             
             themeSlider.addEventListener('click', function() {
                 body.classList.toggle('light-mode');
@@ -499,7 +497,9 @@
                 const btn = document.createElement('button');
                 btn.className = 'button';
                 btn.textContent = `Day ${i}`;
-                btn.setAttribute('data-url', `#day-${i}`);
+                // 关键修改：生成 d01.html ~ d21.html
+                const fileName = String(i).padStart(2, '0') + '.html';
+                btn.setAttribute('data-url', fileName);
                 
                 btn.addEventListener('mouseenter', function() {
                     this.style.fontWeight = '600';
@@ -511,6 +511,7 @@
                 btn.addEventListener('click', function(e) {
                     const url = this.getAttribute('data-url');
                     
+                    // 水波纹动画保留
                     const ripple = document.createElement('div');
                     ripple.style.position = 'absolute';
                     ripple.style.borderRadius = '50%';
@@ -536,13 +537,12 @@
                         ripple.remove();
                     }, 600);
                     
-                    console.log(`点击: ${this.textContent}`);
+                    console.log(`点击跳转页面: ${url}`);
                     
-                    if (url && url !== '#') {
-                        setTimeout(() => {
-                            window.location.href = url;
-                        }, 150);
-                    }
+                    // 直接跳转对应词汇html文件
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 150);
                 });
                 
                 section.appendChild(btn);
