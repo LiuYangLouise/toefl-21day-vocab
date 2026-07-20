@@ -1,3 +1,9 @@
+<script>
+// 强制未登录自动跳登录页
+if (!sessionStorage.getItem("loginOk")) {
+    window.location.href = "login.html";
+}
+</script>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -497,7 +503,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'button';
                 btn.textContent = `Day ${i}`;
-                // 关键修改：生成 d01.html ~ d21.html
+                // 固定生成 d01.html ~ d21.html
                 const fileName = String(i).padStart(2, '0') + '.html';
                 btn.setAttribute('data-url', fileName);
                 
@@ -537,12 +543,9 @@
                         ripple.remove();
                     }, 600);
                     
-                    console.log(`点击跳转页面: ${url}`);
-                    
-                    // 直接跳转对应词汇html文件
-                    setTimeout(() => {
-                        window.location.href = url;
-                    }, 150);
+                    console.log(`跳转页面文件: ${url}`);
+                    // 直接跳转对应词汇页面
+                    window.location.href = url;
                 });
                 
                 section.appendChild(btn);
